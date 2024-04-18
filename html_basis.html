@@ -8,9 +8,10 @@
 
         #Title {
             text-align: center;
+            text-shadow: 5px 5px 5px black;
             font-size: 40px;
             line-height: 50px;
-            color: black;
+            color: navajowhite;
             background-color: rgb(243, 243, 243);
             font-family: "PingFang SC", sans-serif;
         }
@@ -20,6 +21,10 @@
             background-color: rgb(243, 243, 243);
             font-family: "Yuanti SC", sans-serif;
             font-size: 20px;
+        }
+
+        .image-with-shadow {
+            filter: drop-shadow(5px 5px 5px black);
         }
 
         table {
@@ -79,7 +84,7 @@
             <a href="https://openai.com/" style="color: blue" target="_blank">这是openAI的网站</a>
         </li>
         <li>下面是一个图片<br>
-            <img alt="图片加载失败" src="images/HTML_img.png">
+            <img alt="图片加载失败" class="image-with-shadow" src="images/HTML_img.png">
         </li>
         <li>
             下面是一个水平线
