@@ -1,15 +1,3 @@
-// function formatDate(date) {
-//     const year = date.getFullYear();
-//     const month = String(date.getMonth() + 1).padStart(2, '0');
-//     const day = String(date.getDate()).padStart(2, '0');
-//     const hours = String(date.getHours()).padStart(2, '0');
-//     const minutes = String(date.getMinutes()).padStart(2, '0');
-//     const seconds = String(date.getSeconds()).padStart(2, '0');
-//     const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
-//
-//     return `${year}年${month}月${day}日  ${hours}时${minutes}分${seconds}.${milliseconds}秒`;
-// }
-
 class Time {
     constructor(date) {
         this.year = date.getFullYear();
@@ -22,7 +10,15 @@ class Time {
     }
 
     getNowDate() {
-        return `${this.year}年${this.month}月${this.day}日  ${this.hours}时${this.minutes}分${this.seconds}.${this.milliseconds}秒`;
+        return `${this.getCentury()}世纪${this.getDecade()}年代${this.year}年${this.month}月${this.day}日  ${this.hours}时${this.minutes}分${this.seconds}.${this.milliseconds}秒`;
+    }
+
+    getCentury() {
+        return Math.ceil(this.year / 100);
+    }
+
+    getDecade() {
+        return Math.floor(this.year / 10) * 10;
     }
 
     getNowYear() {

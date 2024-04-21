@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
+    <style>
+        #Title {
+            font-family: "Yuanti SC", sans-serif;
+        }
+
+        .font-settings {
+            font-family: "Monaco", sans-serif;
+        }
+    </style>
     <meta charset="UTF-8">
     <script src="../models/time.js"></script>
     <script src="javaScript_basis.js"></script>
@@ -8,8 +17,8 @@
     <link href="../images/JavaScript_img.png" rel="icon" sizes="32x32" type="image/png">
 </head>
 <body onload="autoClick()">
-<h1>下面是现在的时间</h1>
-<p id="demo"></p>
+<h1 id="Title">下面是现在的时间</h1>
+<h2 class="font-settings" id="demo">None</h2>
 <button id="Button" onclick="displayDate()" style="display: none" type="button">获取当前时间</button>
 <script>
     displayDate();
