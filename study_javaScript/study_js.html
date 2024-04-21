@@ -2,12 +2,21 @@
 <html lang="zh-cn">
 <head>
     <style>
+        #Page {
+            background-color: rgb(243, 243, 243);
+        }
+
         #Title {
-            font-family: "Yuanti SC", sans-serif;
+            text-align: center;
+            text-shadow: 1px 1px 1px black;
+            font-size: 40px;
+            line-height: 50px;
+            color: navajowhite;
+            font-family: "PingFang SC", sans-serif;
         }
 
         .font-settings {
-            font-family: "Monaco", sans-serif;
+            font-family: "Yuanti SC", sans-serif;
         }
     </style>
     <meta charset="UTF-8">
@@ -17,9 +26,21 @@
     <title>学习JavaScript</title>
     <link href="../images/JavaScript_img.png" rel="icon" sizes="32x32" type="image/png">
 </head>
-<body onload="autoClick()">
-<h1 id="Title">下面是现在的时间</h1>
-<h2 class="font-settings" id="demo">None</h2>
-<button id="Button" onclick="displayDate()" style="display: none" type="button">获取当前时间</button>
+<body id="Page" onload="autoClick()">
+<div>
+    <div id="Title">
+        <h1>学习JavaScript</h1>
+    </div>
+    <div class="font-settings">
+        <ul>
+            <li>
+                下面是现在的时间<br>
+                <small id="demo" style="font-family: 'Monaco', sans-serif">时间获取失败</small>
+                <button id="Button" onclick="displayDate()" style="display: none" type="button">获取当前时间
+                </button>
+            </li>
+        </ul>
+    </div>
+</div>
 </body>
 </html>
