@@ -13,7 +13,7 @@ let clickCount = 0;
 
 function autoClick() {
     if (clickCount < 10) {
-        new AutoClick("Button").startClicks();
-        setTimeout(autoClick, 100);
+        new AutoClick("Button");
+        setTimeout(autoClick, 15);
     }
 }

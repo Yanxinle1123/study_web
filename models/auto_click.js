@@ -1,6 +1,7 @@
 class AutoClick {
     constructor(elementld) {
         this.elementld = elementld;
+        this.startClicks();
     }
 
     startClicks() {
