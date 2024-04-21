@@ -14,6 +14,6 @@ let clickCount = 0;
 function autoClick() {
     if (clickCount < 10) {
         new AutoClick("Button");
-        setTimeout(autoClick, 15);
+        setTimeout(autoClick, 80);
     }
 }
