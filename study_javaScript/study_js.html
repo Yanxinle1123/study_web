@@ -24,6 +24,7 @@
     <script src="../models/auto_click.js"></script>
     <script src="javaScript_basis.js"></script>
     <script src="../models/change_element.js"></script>
+    <script src="change_text.js"></script>
     <title>学习JavaScript</title>
     <link href="../images/JavaScript_img.png" rel="icon" sizes="32x32" type="image/png">
 </head>
@@ -43,7 +44,9 @@
             <li>
                 下面是一个可以改变标签的按钮<br>
                 <small id="changeText">点击下方的按钮, 将改变这段文字</small><br>
-                <button onclick="changeElement('changeText', 'JavaScript改变了这段文字')">改变文字</button>
+                <button onclick="changeText('changeText', 'JavaScript改变了这段文字', 'JavaScript又将文字改变了, 再点一下即可改回去')">
+                    改变文字
+                </button>
             </li>
         </ul>
     </div>
