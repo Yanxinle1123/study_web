@@ -13,7 +13,7 @@ let clickCount = 0;
 
 function autoClick() {
     if (clickCount < 10) {
-        new AutoClick("Button");
+        new AutoClick("timeButton");
         setTimeout(autoClick, 80);
     }
 }
