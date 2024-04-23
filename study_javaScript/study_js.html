@@ -3,7 +3,7 @@
 <head>
     <style>
         #Page {
-            background-color: rgb(243, 243, 243);
+            background-color: white;
         }
 
         #Title {
@@ -20,11 +20,13 @@
         }
     </style>
     <meta charset="UTF-8">
+    <script src="javaScript_basis.js"></script>
     <script src="../models/time.js"></script>
     <script src="../models/auto_click.js"></script>
-    <script src="javaScript_basis.js"></script>
-    <script src="../models/change_element.js"></script>
-    <script src="change_text.js"></script>
+    <script src="../models/change_text.js"></script>
+    <script src="../models/change_image.js"></script>
+    <script src="../models/change_text2.js"></script>
+    <script src="../models/change_image2.js"></script>
     <title>学习JavaScript</title>
     <link href="../images/JavaScript_img.png" rel="icon" sizes="32x32" type="image/png">
 </head>
@@ -44,9 +46,15 @@
             <li>
                 下面是一个可以改变标签的按钮<br>
                 <small id="changeText">点击下方的按钮, 将改变这段文字</small><br>
-                <button onclick="changeText('changeText', 'JavaScript改变了这段文字', 'JavaScript又将文字改变了, 再点一下即可改回去')">
+                <button onclick="changeText2('changeText', 'JavaScript改变了这段文字', 'JavaScript又将文字改变了, 再点一下即可改回去')">
                     改变文字
                 </button>
+            </li>
+            <li>
+                点击下方灯泡, 可以点亮和关闭它<br>
+                <img alt="图像加载失败" id="light"
+                     onclick="changeImage2('light', '../images/light_on.png', '../images/light_off.png')"
+                     src="../images/light_off.png">
             </li>
         </ul>
     </div>

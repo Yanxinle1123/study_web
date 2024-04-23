@@ -5,7 +5,7 @@ function formatDate() {
 
 function displayDate() {
     for (let i = 0; i < 10; i++) {
-        changeElement("demo", formatDate()); // 改变元素
+        changeText("demo", formatDate()); // 改变元素
     }
 }
 
