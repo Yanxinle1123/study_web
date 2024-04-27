@@ -43,16 +43,23 @@
             </li>
             <li>
                 下面是一个可以改变标签的按钮<br>
-                <small id="changeText">点击下方的按钮, 将改变这段文字</small><br>
+                <small id="changeText" style="font-family: 'Monaco', sans-serif">点击下方的按钮,
+                    将改变这段文字</small><br>
                 <button onclick="changeText2('changeText', 'JavaScript改变了这段文字', 'JavaScript又将文字改变了, 再点一下即可改回去')">
                     改变文字
                 </button>
             </li>
             <li>
                 点击下方灯泡, 可以点亮和关闭它<br>
-                <img alt="图像加载失败" id='light'
+                <img alt="图像加载失败" height="179" id='light'
                      onclick="changeImage2('light', '../images/light_on.png', '../images/light_off.png')"
-                     src="../images/light_off.png">
+                     src="../images/light_off.png" width="98">
+            </li>
+            <li>
+                下面是一个可以改变字颜色的按钮<br>
+                <small id="changeTextColor" style="font-family: 'Monaco', sans-serif">点击下方按钮,
+                    即可改变此文字的颜色</small><br>
+                <button onclick="changeTextColor2('changeTextColor', '#ff0000', '#2A31D7')">改变颜色</button>
             </li>
         </ul>
     </div>

@@ -10,8 +10,8 @@ class Time {
     }
 
     getNowDate() {
-        return `${this.getCentury()}世纪${this.getDecade()}年代${this.getNowYear()}年${this.getNowMonth()}月
-        ${this.getNowDay()}日${this.getNowHours()}时${this.getNowMinutes()}分${this.getNowSeconds()}.${this.getNowMilliseconds()}秒`;
+        return `${this.getCentury()}世纪 ${this.getDecade()}年代 ${this.getNowYear()}年 ${this.getNowMonth()}月
+        ${this.getNowDay()}日 ${this.getNowHours()}时 ${this.getNowMinutes()}分 ${this.getNowSeconds()}.${this.getNowMilliseconds()}秒`;
     }
 
     getCentury() {

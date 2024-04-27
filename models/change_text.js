@@ -14,3 +14,20 @@ function changeText2(id, changeText1, changeText2) {
         textNumber -= 1;
     }
 }
+
+function changeTextColor(id, color) {
+    let x = document.getElementById(id);
+    x.style.color = color;
+}
+
+let textColorNumber = 1;
+
+function changeTextColor2(id, color1, color2) {
+    if (textColorNumber === 1) {
+        changeTextColor(id, color1);
+        textColorNumber += 1;
+    } else {
+        changeTextColor(id, color2);
+        textColorNumber -= 1;
+    }
+}
