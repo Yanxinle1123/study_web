@@ -25,6 +25,7 @@
     <script src="../models/auto_click.js"></script>
     <script src="../models/change_text.js"></script>
     <script src="../models/change_image.js"></script>
+    <script src="../models/judge.js"></script>
     <title>学习JavaScript</title>
     <link href="../images/JavaScript_img.png" rel="icon" sizes="32x32" type="image/png">
 </head>
@@ -60,6 +61,13 @@
                 <small id="changeTextColor" style="font-family: 'Monaco', sans-serif">点击下方按钮,
                     即可改变此文字的颜色</small><br>
                 <button onclick="changeTextColor2('changeTextColor', '#ff0000', '#2A31D7')">改变颜色</button>
+            </li>
+            <li>
+                下面是一个可以判断输入框里是否为数字的按钮<br>
+                <label>
+                    <input id="judgeTextBoxNumber" type="text">
+                </label>
+                <button onclick="judgeTextBoxNumber('judgeTextBoxNumber')">判断</button>
             </li>
         </ul>
     </div>
