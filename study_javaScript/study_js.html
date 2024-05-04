@@ -26,6 +26,7 @@
     <script src="../models/change_text.js"></script>
     <script src="../models/change_image.js"></script>
     <script src="../models/judge.js"></script>
+    <script src="../models/calculator.js"></script>
     <title>学习JavaScript</title>
     <link href="../images/JavaScript_img.png" rel="icon" sizes="32x32" type="image/png">
 </head>
@@ -68,6 +69,14 @@
                     <input id="judgeTextBoxNumber" type="text">
                 </label>
                 <button onclick="judgeTextBoxNumber('judgeTextBoxNumber')">判断</button>
+            </li>
+            <li>
+                下面是一个计算器
+                <small>请将计算公式输入到下面的文本框里面</small>
+                <label>
+                    <input id="calculatorTextBox" type="text">
+                </label>
+                <button onclick="calculator()">计算</button>
             </li>
         </ul>
     </div>
