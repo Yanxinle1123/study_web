@@ -1,13 +1,11 @@
 function calculator(text) {
-    alert("开始执行calculator()");
-    try {
-        return eval(text);
-    } catch {
-        alert("错误");
-    }
+    return eval(text);
 }
 
 function calculator2(id) {
-    alert("开始执行calculator2()");
-    return calculator(getTextBoxValue(id));
+    try {
+        alert(`计算结果为: ${calculator(getTextBoxValue(id))}`);
+    } catch {
+        alert("计算错误");
+    }
 }
