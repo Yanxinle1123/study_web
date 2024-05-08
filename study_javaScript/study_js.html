@@ -28,6 +28,7 @@
     <script src="../models/judge.js"></script>
     <script src="../models/get_value.js"></script>
     <script src="../models/calculator.js"></script>
+    <script src="../models/show_popup.js"></script>
     <title>学习JavaScript</title>
     <link href="../images/JavaScript_img.png" rel="icon" sizes="32x32" type="image/png">
 </head>
@@ -73,11 +74,34 @@
             </li>
             <li>
                 下面是一个计算器<br>
-                <small>请将计算公式输入到下面的文本框里面</small><br>
+                <small style="font-family: 'Monaco', sans-serif">请将计算公式输入到下面的文本框里面</small><br>
                 <label>
                     <input id="calculatorTextBox" type="text">
                 </label>
                 <button onclick="calculator2('calculatorTextBox')">计算</button>
+            </li>
+            <li>
+                在JavaScript中, 可以创建以下弹窗
+                <ol>
+                    <li>
+                        <small style="font-family: 'Monaco', sans-serif">提示框</small><br>
+                        <button onclick="new ShowPopup('alert', '这是一个提示框', null, true).show();">
+                            创建提示框
+                        </button>
+                    </li>
+                    <li>
+                        <small style="font-family: 'Monaco', sans-serif">选择框</small><br>
+                        <button onclick="new ShowPopup('confirm', '这是一个选择框', null, true).show();">
+                            创建选择框
+                        </button>
+                    </li>
+                    <li>
+                        <small style="font-family: 'Monaco', sans-serif">输入框</small><br>
+                        <button onclick="new ShowPopup('prompt', '这是一个输入框', '请输入文字', true).show();">
+                            创建输入框
+                        </button>
+                    </li>
+                </ol>
             </li>
         </ul>
     </div>
