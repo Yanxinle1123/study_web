@@ -29,6 +29,12 @@
     <script src="../models/get_value.js"></script>
     <script src="../models/calculator.js"></script>
     <script src="../models/show_popup.js"></script>
+    <script>
+        function restartMarquee() {
+            var marquee = document.querySelector('marquee');
+            marquee.start();
+        }
+    </script>
     <title>学习JavaScript</title>
     <link href="../images/JavaScript_img.png" rel="icon" sizes="32x32" type="image/png">
 </head>
@@ -41,14 +47,14 @@
         <ul>
             <li>
                 下面是现在的时间<br>
-                <small id="demo" style="font-family: 'Monaco', sans-serif">时间获取失败</small>
+                <span id="demo" style="font-family: 'Monaco', sans-serif">时间获取失败</span>
                 <button id="timeButton" onclick="displayDate()" style="display: none" type="button">获取当前时间
                 </button>
             </li>
             <li>
                 下面是一个可以改变标签的按钮<br>
-                <small id="changeText" style="font-family: 'Monaco', sans-serif">点击下方的按钮,
-                    将改变这段文字</small><br>
+                <span id="changeText" style="font-family: 'Monaco', sans-serif">点击下方的按钮,
+                    将改变这段文字</span><br>
                 <button onclick="changeText2('changeText', 'JavaScript改变了这段文字', 'JavaScript又将文字改变了, 再点一下即可改回去')">
                     改变文字
                 </button>
@@ -61,8 +67,8 @@
             </li>
             <li>
                 下面是一个可以改变字颜色的按钮<br>
-                <small id="changeTextColor" style="font-family: 'Monaco', sans-serif">点击下方按钮,
-                    即可改变此文字的颜色</small><br>
+                <span id="changeTextColor" style="font-family: 'Monaco', sans-serif">点击下方按钮,
+                    即可改变此文字的颜色</span><br>
                 <button onclick="changeTextColor2('changeTextColor', '#ff0000', '#2A31D7')">改变颜色</button>
             </li>
             <li>
@@ -74,7 +80,7 @@
             </li>
             <li>
                 下面是一个计算器<br>
-                <small style="font-family: 'Monaco', sans-serif">请将计算公式输入到下面的文本框里面</small><br>
+                <span style="font-family: 'Monaco', sans-serif">请将计算公式输入到下面的文本框里面</span><br>
                 <label>
                     <input id="calculatorTextBox" type="text">
                 </label>
@@ -84,22 +90,48 @@
                 在JavaScript中, 可以创建以下弹窗
                 <ol>
                     <li>
-                        <small style="font-family: 'Monaco', sans-serif">提示框</small><br>
+                        <span style="font-family: 'Monaco', sans-serif">提示框</span><br>
                         <button onclick="new ShowPopup('alert', '这是一个提示框', null, true).show();">
                             创建提示框
                         </button>
                     </li>
                     <li>
-                        <small style="font-family: 'Monaco', sans-serif">选择框</small><br>
+                        <span style="font-family: 'Monaco', sans-serif">选择框</span><br>
                         <button onclick="new ShowPopup('confirm', '这是一个选择框', null, true).show();">
                             创建选择框
                         </button>
                     </li>
                     <li>
-                        <small style="font-family: 'Monaco', sans-serif">输入框</small><br>
+                        <span style="font-family: 'Monaco', sans-serif">输入框</span><br>
                         <button onclick="new ShowPopup('prompt', '这是一个输入框', '请输入文字', true).show();">
                             创建输入框
                         </button>
+                    </li>
+                </ol>
+            </li>
+            <li>
+                下面是一个走马灯的几种效果
+                <ol>
+                    <li>
+                        <span style="font-family: 'Monaco', sans-serif">交替滚动效果</span>
+                        <marquee behavior="alternate" direction="right" scrollamount="15"
+                                 style="font-family: 'Monaco', sans-serif">
+                            <small>这是走马灯的交替滚动效果</small>
+                        </marquee>
+                    </li>
+                    <li>
+                        <span style="font-family: 'Monaco', sans-serif">普通滚动效果</span>
+                        <marquee behavior="scroll" direction="right" scrollamount="15"
+                                 style="font-family: 'Monaco', sans-serif">
+                            <small>这是走马灯的普通滚动效果</small>
+                        </marquee>
+                    </li>
+                    <li>
+                        <span style="font-family: 'Monaco', sans-serif">滑动滚动效果</span>
+                        <marquee behavior="slide" direction="right" scrollamount="15"
+                                 style="font-family: 'Monaco', sans-serif">
+                            <small>这是走马灯的滑动滚动效果</small>
+                        </marquee>
                     </li>
                 </ol>
             </li>
