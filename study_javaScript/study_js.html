@@ -29,12 +29,6 @@
     <script src="../models/get_value.js"></script>
     <script src="../models/calculator.js"></script>
     <script src="../models/show_popup.js"></script>
-    <script>
-        function restartMarquee() {
-            var marquee = document.querySelector('marquee');
-            marquee.start();
-        }
-    </script>
     <title>学习JavaScript</title>
     <link href="../images/JavaScript_img.png" rel="icon" sizes="32x32" type="image/png">
 </head>
@@ -114,7 +108,7 @@
                 <ol>
                     <li>
                         <span style="font-family: 'Monaco', sans-serif">交替滚动效果</span>
-                        <marquee behavior="alternate" direction="right" scrollamount="15"
+                        <marquee behavior="alternate" direction="right" scrollamount="20"
                                  style="font-family: 'Monaco', sans-serif">
                             <small>这是走马灯的交替滚动效果</small>
                         </marquee>
@@ -124,13 +118,6 @@
                         <marquee behavior="scroll" direction="right" scrollamount="15"
                                  style="font-family: 'Monaco', sans-serif">
                             <small>这是走马灯的普通滚动效果</small>
-                        </marquee>
-                    </li>
-                    <li>
-                        <span style="font-family: 'Monaco', sans-serif">滑动滚动效果</span>
-                        <marquee behavior="slide" direction="right" scrollamount="15"
-                                 style="font-family: 'Monaco', sans-serif">
-                            <small>这是走马灯的滑动滚动效果</small>
                         </marquee>
                     </li>
                 </ol>
