@@ -5,7 +5,6 @@
         #Page {
             background-color: white;
         }
-
         #Title {
             text-align: center;
             text-shadow: 1px 1px 1px black;
@@ -19,47 +18,34 @@
             font-family: "Yuanti SC", sans-serif;
         }
 
-
         .marquee {
+            width: 100%;
             overflow: hidden;
             white-space: nowrap;
-            width: 100%;
             position: relative;
         }
-
         .marquee span {
             display: inline-block;
             padding-left: 100%;
         }
 
-        .normal span {
-            animation: normal 10s linear infinite;
-        }
-
         .bounce span {
-            animation: bounce 10s linear infinite;
+            animation: bounce_keyframes 5s linear infinite;
+        }
+        @keyframes bounce_keyframes {
+            0% {transform: translateX(0);}
+            50% {transform: translateX(-100%);}
+            100% {transform: translateX(0);}
         }
 
-        @keyframes normal {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
+        .normal_marquee span {
+            animation: normal_keyframes 2500ms linear 0s infinite normal;
+        }
+        @keyframes normal_keyframes {
+            0% {transform: translateX(0);}
+            100% {transform: translateX(-100%);}
         }
 
-        @keyframes bounce {
-            0% {
-                transform: translateX(0);
-            }
-            50% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(0);
-            }
-        }
     </style>
     <meta charset="UTF-8">
     <script src="javaScript_basis.js"></script>
@@ -151,27 +137,20 @@
                     <li>
                         <span style="font-family: 'Monaco', sans-serif">反弹效果</span>
                         <div class="marquee bounce">
-                            <span style="font-family: 'Monaco', sans-serif"><small>这是走马灯的反弹效果</small></span>
+                            <span style="font-family: 'Monaco', sans-serif">这是走马灯的反弹效果</span>
                         </div>
-                        <script>
-                            document.querySelector('.normal span');
-                            document.querySelector('.bounce span');
-                        </script>
                     </li>
                     <li>
                         <span style="font-family: 'Monaco', sans-serif">普通效果</span>
-                        <div class="marquee normal">
+                        <div class="marquee normal_marquee">
                             <span>这是走马灯的普通效果</span>
                         </div>
-                        <script>
-                            document.querySelector('.normal span');
-                            document.querySelector('.bounce span');
-                        </script>
                     </li>
                 </ol>
             </li>
         </ul>
     </div>
 </div>
+
 </body>
 </html>
