@@ -1,229 +1,229 @@
 <!doctype html>
 <html lang="zh-cn">
 <head>
-    <style>
-        #Page {
-            background-color: rgb(243, 243, 243);
-        }
+	<style>
+		#Page {
+			background-color: rgb(243, 243, 243);
+		}
 
-        #Title {
-            text-align: center;
-            text-shadow: 1px 1px 1px black;
-            font-size: 40px;
-            line-height: 50px;
-            color: navajowhite;
-            font-family: "PingFang SC", sans-serif;
-        }
+		#Title {
+			text-align: center;
+			text-shadow: 1px 1px 1px black;
+			font-size: 40px;
+			line-height: 50px;
+			color: navajowhite;
+			font-family: "PingFang SC", sans-serif;
+		}
 
-        .text-settings {
-            color: black;
-            font-family: "Yuanti SC", sans-serif;
-            font-size: 20px;
-        }
+		.text-settings {
+			color: black;
+			font-family: "Yuanti SC", sans-serif;
+			font-size: 20px;
+		}
 
-        .img-settings {
-            filter: drop-shadow(5px 5px 5px rgb(239, 133, 50));
-        }
+		.img-settings {
+			filter: drop-shadow(5px 5px 5px rgb(239, 133, 50));
+		}
 
-        table {
-            border-collapse: collapse;
-            width: 400px;
-            box-shadow: 5px 5px 5px black;
-            height: 150px;
-        }
+		table {
+			border-collapse: collapse;
+			width: 400px;
+			box-shadow: 5px 5px 5px black;
+			height: 150px;
+		}
 
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
-        }
+		th, td {
+			border: 1px solid black;
+			padding: 8px;
+			text-align: center;
+		}
 
-        audio {
-            height: 30px;
-            width: 500px;
-            border: 1px solid black;
-            box-shadow: 5px 5px 5px black;
-        }
+		audio {
+			height: 30px;
+			width: 500px;
+			border: 1px solid black;
+			box-shadow: 5px 5px 5px black;
+		}
 
-        video {
-            height: 350px;
-            border: 1px solid black;
-            width: 620px;
-            box-shadow: 5px 5px 5px black;
-        }
-    </style>
-    <meta charset="utf-8">
-    <title>HTML基础</title>
-    <link href="../images/HTML_img.png" rel="icon" sizes="32x32" type="image/png">
+		video {
+			height: 350px;
+			border: 1px solid black;
+			width: 620px;
+			box-shadow: 5px 5px 5px black;
+		}
+	</style>
+	<meta charset="utf-8">
+	<title>HTML基础</title>
+	<link href="../images/HTML_img.png" rel="icon" sizes="32x32" type="image/png">
 </head>
 <body id="Page">
 <div>
-    <div id="Title">
-        <h1>HTML基础</h1>
-    </div>
-    <div>
-        <ul class="text-settings">
-            <li>未闭合的元素：如果元素没有正确地结束标记，那么将影响下方整个区域，这不是你期望的</li>
-            <li>错误嵌套元素：正确进行嵌套是一项重要的编码习惯</li>
-            <li>
-                <strong>这是一个粗体的强调</strong>
-            </li>
-            <li>
-                <b>这是粗体</b>
-            </li>
-            <li>
-                <em>这是一个斜体的强调</em>
-            </li>
-            <li>
-                <i>这是斜体</i>
-            </li>
-            <li>
-                这是一个空&nbsp;格
-            </li>
-            <li>
-                <a href="https://openai.com/" style="color: blue" target="_blank">这是openAI的网站</a>
-            </li>
-            <li>下面是一个图片<br>
-                <img alt="图片加载失败" class="img-settings" src="../images/HTML_img.png">
-            </li>
-            <li>
-                下面是一个水平线
-                <hr/>
-            </li>
-            <li>
-                这是 <sub>下标</sub> 和 <sup>上标</sup>
-            </li>
-            <li>
-                这是 <small>小号字</small>
-            </li>
-            <li>
-                这是
-                <ins>插入字</ins>
-            </li>
-            <li>
-                这是
-                <del>删除字</del>
-            </li>
-            <li>
-                下面是一个代码块<br>
-                <code>
-                    print("Hello World")
-                </code>
-            </li>
-            <li>
-                下面是键盘码<br>
-                <kbd>hello</kbd>
-            </li>
-            <li>
-                下面是计算机代码样本<br>
-                <samp>hello</samp>
-            </li>
-            <li>
-                下面是变量<br>
-                <var>value</var>
-            </li>
-            <li>
-                <div style="text-align:center">这是一段居中的文字</div>
-            </li>
-            <li>
-                下面是一个表格
-                <table>
-                    <caption>表格</caption>
-                    <tr>
-                        <th colspan="2">表头</th>
-                    </tr>
-                    <tr>
-                        <td>第 1 行, 第 1 单元格</td>
-                        <td>第 1 行, 第 2 单元格</td>
-                    </tr>
-                    <tr>
-                        <td>第 2 行, 第 1 单元格</td>
-                        <td>第 2 行, 第 2 单元格</td>
-                    </tr>
-                </table>
-            </li>
-            <li>
-                这是
-                <span style="font-size:50px; color:blue">span</span>
-                <span style="color: red">
+	<div id="Title">
+		<h1>HTML基础</h1>
+	</div>
+	<div>
+		<ul class="text-settings">
+			<li>未闭合的元素：如果元素没有正确地结束标记，那么将影响下方整个区域，这不是你期望的</li>
+			<li>错误嵌套元素：正确进行嵌套是一项重要的编码习惯</li>
+			<li>
+				<strong>这是一个粗体的强调</strong>
+			</li>
+			<li>
+				<b>这是粗体</b>
+			</li>
+			<li>
+				<em>这是一个斜体的强调</em>
+			</li>
+			<li>
+				<i>这是斜体</i>
+			</li>
+			<li>
+				这是一个空&nbsp;格
+			</li>
+			<li>
+				<a href="https://openai.com/" style="color: blue" target="_blank">这是openAI的网站</a>
+			</li>
+			<li>下面是一个图片<br>
+				<img alt="图片加载失败" class="img-settings" src="../images/HTML_img.png">
+			</li>
+			<li>
+				下面是一个水平线
+				<hr/>
+			</li>
+			<li>
+				这是 <sub>下标</sub> 和 <sup>上标</sup>
+			</li>
+			<li>
+				这是 <small>小号字</small>
+			</li>
+			<li>
+				这是
+				<ins>插入字</ins>
+			</li>
+			<li>
+				这是
+				<del>删除字</del>
+			</li>
+			<li>
+				下面是一个代码块<br>
+				<code>
+					print("Hello World")
+				</code>
+			</li>
+			<li>
+				下面是键盘码<br>
+				<kbd>hello</kbd>
+			</li>
+			<li>
+				下面是计算机代码样本<br>
+				<samp>hello</samp>
+			</li>
+			<li>
+				下面是变量<br>
+				<var>value</var>
+			</li>
+			<li>
+				<div style="text-align:center">这是一段居中的文字</div>
+			</li>
+			<li>
+				下面是一个表格
+				<table>
+					<caption>表格</caption>
+					<tr>
+						<th colspan="2">表头</th>
+					</tr>
+					<tr>
+						<td>第 1 行, 第 1 单元格</td>
+						<td>第 1 行, 第 2 单元格</td>
+					</tr>
+					<tr>
+						<td>第 2 行, 第 1 单元格</td>
+						<td>第 2 行, 第 2 单元格</td>
+					</tr>
+				</table>
+			</li>
+			<li>
+				这是
+				<span style="font-size:50px; color:blue">span</span>
+				<span style="color: red">
                     <ins>组合的</ins>
                 </span>
-                <span style="font-family: 'STFangsong', sans-serif; font-size: 30px">
+				<span style="font-family: 'STFangsong', sans-serif; font-size: 30px">
                     文本
                 </span>
-            </li>
-            <li>
-                下面是一个表单<br><br>
-                <form action="data.html" method="get" name="input">
-                    <label>
-                        用户名:&nbsp;
-                        <input name="firstname" type="text"><br>
-                        手机号:&nbsp;
-                        <input name="lastname" type="text"><br>
-                        密码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <input name="password" type="password"><br>
-                        <input type="submit" value="提交">
-                    </label>
-                </form>
-            </li>
-            <li>
-                下面是一个单选按钮
-                <form>
-                    <label>
-                        <small>请选择您的性别:</small><br>
-                        <input name="sex" type="radio" value="male">男<br>
-                        <input name="sex" type="radio" value="female">女
-                    </label><br>
-                </form>
-            </li>
-            <li>
-                下面是一个复选框
-                <form>
-                    <label>
-                        <small>请选择您喜欢的编程语言:</small><br>
-                        <input name="vehicle" type="checkbox" value="Python">Python<br>
-                        <input name="vehicle" type="checkbox" value="C++">C++<br>
-                        <input name="vehicle" type="checkbox" value="Java">Java<br>
-                        <input name="vehicle" type="checkbox" value="Go">Go<br>
-                        <input name="vehicle" type="checkbox" value="Rust">Rust<br>
-                    </label>
-                </form>
-            </li>
-            <li>
-                下面是一个提交按钮<br>
-                <form action="data.html" method="get" name="input">
-                    <label>
-                        用户名:
-                        <input name="user" type="text">
-                        <input type="submit" value="提交">
-                    </label>
-                </form>
-            </li>
-            <li>
-                下面是一段音频<br>
-                <audio controls>
-                    <source src="../audios/neigh.m4a">
-                </audio>
-            </li>
-            <li>
-                下面是一段视频<br>
-                <video controls>
-                    <source src="../videos/autumn.mp4">
-                </video>
-            </li>
-            <li>
-                下面是一个下拉列表<br>
-                <label for="city">
-                    <small>请选择您所在的国家:</small>
-                </label>
-                <select id="city" name="city">
-                    <option value="1">中国</option>
-                    <option value="2">俄罗斯</option>
-                    <option value="3">西班牙</option>
-                </select>
-            </li>
-        </ul>
-    </div>
+			</li>
+			<li>
+				下面是一个表单<br><br>
+				<form action="data.html" method="get" name="input">
+					<label>
+						用户名:&nbsp;
+						<input name="firstname" type="text"><br>
+						手机号:&nbsp;
+						<input name="lastname" type="text"><br>
+						密码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<input name="password" type="password"><br>
+						<input type="submit" value="提交">
+					</label>
+				</form>
+			</li>
+			<li>
+				下面是一个单选按钮
+				<form>
+					<label>
+						<small>请选择您的性别:</small><br>
+						<input name="sex" type="radio" value="male">男<br>
+						<input name="sex" type="radio" value="female">女
+					</label><br>
+				</form>
+			</li>
+			<li>
+				下面是一个复选框
+				<form>
+					<label>
+						<small>请选择您喜欢的编程语言:</small><br>
+						<input name="vehicle" type="checkbox" value="Python">Python<br>
+						<input name="vehicle" type="checkbox" value="C++">C++<br>
+						<input name="vehicle" type="checkbox" value="Java">Java<br>
+						<input name="vehicle" type="checkbox" value="Go">Go<br>
+						<input name="vehicle" type="checkbox" value="Rust">Rust<br>
+					</label>
+				</form>
+			</li>
+			<li>
+				下面是一个提交按钮<br>
+				<form action="data.html" method="get" name="input">
+					<label>
+						用户名:
+						<input name="user" type="text">
+						<input type="submit" value="提交">
+					</label>
+				</form>
+			</li>
+			<li>
+				下面是一段音频<br>
+				<audio controls>
+					<source src="../audios/neigh.m4a">
+				</audio>
+			</li>
+			<li>
+				下面是一段视频<br>
+				<video controls>
+					<source src="../videos/autumn.mp4">
+				</video>
+			</li>
+			<li>
+				下面是一个下拉列表<br>
+				<label for="city">
+					<small>请选择您所在的国家:</small>
+				</label>
+				<select id="city" name="city">
+					<option value="1">中国</option>
+					<option value="2">俄罗斯</option>
+					<option value="3">西班牙</option>
+				</select>
+			</li>
+		</ul>
+	</div>
 </div>
 </body>
 </html>

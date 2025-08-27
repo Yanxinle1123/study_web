@@ -1,27 +1,901 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta content="width=device-width, initial-scale=1.0" name="viewport">
-	<title>Wechat and QQ</title>
-	<style>
-		.button {
-			display: inline-block;
-			padding: 30px 50px;
-			font-size: 16px;
-			cursor: pointer;
-			text-align: center;
-			text-decoration: none;
-			outline: none;
-			color: white;
-			background-color: green;
-			border: none;
-			border-radius: 10px;
+	<title>星际射击 - 模拟射击游戏</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+	<!-- Tailwind 配置 -->
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: '#3B82F6',
+						secondary: '#10B981',
+						accent: '#F59E0B',
+						danger: '#EF4444',
+						dark: '#1E293B',
+						light: '#F8FAFC',
+						shield: '#8B5CF6' // 防护罩颜色
+					},
+					fontFamily: {
+						game: ['Orbitron', 'sans-serif']
+					}
+				}
+			}
+		}
+	</script>
+
+	<style type="text/tailwindcss">
+		@layer utilities {
+			.content-auto {
+				content-visibility: auto;
+			}
+
+			.game-shadow {
+				box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+			}
+
+			.gun-shadow {
+				filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.7));
+			}
+
+			.bullet-trail {
+				box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+			}
+
+			.enemy-glow {
+				filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.6));
+			}
+
+			.target-lock {
+				filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.9));
+				animation: pulse 1.5s infinite;
+			}
+
+			.shield-pulse {
+				animation: shieldPulse 2s infinite;
+			}
+
+			@keyframes pulse {
+				0% {
+					filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.7));
+				}
+				50% {
+					filter: drop-shadow(0 0 12px rgba(239, 68, 68, 1));
+				}
+				100% {
+					filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.7));
+				}
+			}
+			@keyframes shieldPulse {
+				0% {
+					opacity: 0.5;
+					transform: scale(1);
+				}
+				50% {
+					opacity: 0.8;
+					transform: scale(1.05);
+				}
+				100% {
+					opacity: 0.5;
+					transform: scale(1);
+				}
+			}
 		}
 	</style>
+
+	<!-- 导入游戏字体 -->
+	<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-<a class="button" href="https://weixin.qq.com/">打开微信官网</a>
-<a class="button" href="https://im.qq.com/">打开QQ官网</a>
+<body class="bg-dark text-light overflow-hidden h-screen flex flex-col justify-between items-center m-0 p-0">
+<!-- 游戏头部 -->
+<header class="w-full p-4 flex justify-between items-center bg-dark/80 backdrop-blur-sm border-b border-primary/30 z-10">
+	<div class="text-xl font-game font-bold text-primary flex items-center">
+		<i class="fa fa-crosshairs mr-2"></i>
+		<span>星际射击</span>
+	</div>
+	<div class="flex items-center gap-6">
+		<div class="font-game text-accent">
+			分数: <span class="text-xl font-bold" id="score">0</span>
+		</div>
+		<div class="font-game text-secondary">
+			敌人: <span class="text-xl font-bold" id="enemy-count">0</span>
+		</div>
+	</div>
+</header>
+
+<!-- 游戏主区域 -->
+<main class="flex-1 w-full relative overflow-hidden bg-gradient-to-b from-dark to-dark/80">
+	<!-- 星空背景 -->
+	<div class="absolute inset-0" id="stars"></div>
+
+	<!-- 游戏画布 -->
+	<canvas class="absolute inset-0 w-full h-full" id="gameCanvas"></canvas>
+
+	<!-- 游戏开始界面 -->
+	<div class="absolute inset-0 flex flex-col items-center justify-center bg-dark/90 backdrop-blur-sm z-20"
+		 id="startScreen">
+		<h1 class="text-5xl md:text-7xl font-game font-bold text-primary mb-8 tracking-wider">星际射击</h1>
+		<p class="text-xl mb-10 text-light/80 text-center max-w-md">
+			控制机枪射击来袭的敌人飞船！<br>
+			鼠标瞄准，空格射击，长按连发<br>
+			自动模式：自动瞄准并射击<br>
+			防护罩可抵御敌人撞击
+		</p>
+		<button class="px-8 py-3 bg-primary hover:bg-primary/80 text-white font-game font-bold rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/50"
+				id="startButton">
+			开始游戏
+		</button>
+	</div>
+
+	<!-- 游戏暂停界面 -->
+	<div class="absolute inset-0 flex flex-col items-center justify-center bg-dark/90 backdrop-blur-sm z-20 hidden"
+		 id="pauseScreen">
+		<h2 class="text-4xl font-game font-bold text-accent mb-6">游戏暂停</h2>
+		<p class="text-xl mb-8">当前分数: <span class="font-bold text-primary" id="pauseScore">0</span></p>
+		<button class="px-6 py-2 bg-secondary hover:bg-secondary/80 text-white font-game rounded-lg transition-all duration-300"
+				id="resumeButton">
+			继续游戏
+		</button>
+	</div>
+</main>
+
+<!-- 游戏底部控制区 -->
+<footer class="w-full p-4 bg-dark/80 backdrop-blur-sm border-t border-primary/30 z-10">
+	<div class="flex justify-between items-center">
+		<!-- 模式选择 -->
+		<div class="flex items-center gap-3">
+			<span class="font-game text-light/80">模式:</span>
+			<div class="flex rounded-full bg-dark border border-primary/50 p-1">
+				<button class="px-4 py-1 rounded-full bg-primary text-white font-game text-sm active" id="manualMode">
+					手动
+				</button>
+				<button class="px-4 py-1 rounded-full text-light/70 font-game text-sm" id="autoMode">自动</button>
+			</div>
+		</div>
+
+		<!-- 控制提示 -->
+		<div class="hidden md:flex items-center gap-6">
+			<div class="flex items-center gap-2">
+				<i class="fa fa-mouse-pointer text-light/70"></i>
+				<span class="font-game text-sm text-light/80">移动瞄准</span>
+			</div>
+			<div class="flex items-center gap-2">
+				<i class="fa fa-space-shuttle text-light/70"></i>
+				<span class="font-game text-sm text-light/80">空格射击</span>
+			</div>
+			<div class="flex items-center gap-2">
+				<i class="fa fa-pause text-light/70"></i>
+				<span class="font-game text-sm text-light/80">P键暂停</span>
+			</div>
+		</div>
+
+		<!-- 暂停按钮 -->
+		<button class="p-2 rounded-full hover:bg-primary/20 transition-colors" id="pauseButton">
+			<i class="fa fa-pause text-light/80"></i>
+		</button>
+	</div>
+</footer>
+
+<script>
+	// 游戏状态和配置
+	const game = {
+		canvas: null,
+		ctx: null,
+		width: 0,
+		height: 0,
+		isRunning: false,
+		isPaused: false,
+		score: 0,
+		enemies: [],
+		bullets: [],
+		lastShotTime: 0,
+		shotInterval: 80,
+		mouseX: 0,
+		mouseY: 0,
+		isShooting: false,
+		mode: 'manual', // 'manual' 或 'auto'
+		enemySpawnInterval: 200, // 敌人生成间隔(ms)
+		lastEnemySpawn: 0,
+		maxEnemies: 5,
+		particles: [],
+		targetEnemy: null, // 当前锁定的敌人
+		shield: {
+			radius: 120, // 防护罩半径
+			color: 'rgba(139, 92, 246, 0.3)', // 防护罩颜色
+			borderColor: 'rgba(139, 92, 246, 0.8)', // 防护罩边框颜色
+			pulsePhase: 0 // 用于脉冲动画
+		},
+		targetAngle: 0 // 新增目标角度属性
+	};
+
+	// 机枪属性
+	const gun = {
+		x: 0,
+		y: 0,
+		width: 80,
+		height: 100,
+		angle: 0,
+		color: '#F59E0B'
+	};
+
+	// DOM元素
+	const elements = {
+		startScreen: document.getElementById('startScreen'),
+		startButton: document.getElementById('startButton'),
+		pauseScreen: document.getElementById('pauseScreen'),
+		pauseButton: document.getElementById('pauseButton'),
+		resumeButton: document.getElementById('resumeButton'),
+		scoreDisplay: document.getElementById('score'),
+		enemyCountDisplay: document.getElementById('enemy-count'),
+		manualModeBtn: document.getElementById('manualMode'),
+		autoModeBtn: document.getElementById('autoMode'),
+		pauseScoreDisplay: document.getElementById('pauseScore')
+	};
+
+	// 初始化游戏
+	function initGame() {
+		game.canvas = document.getElementById('gameCanvas');
+		game.ctx = game.canvas.getContext('2d');
+
+		// 设置画布尺寸
+		resizeCanvas();
+		window.addEventListener('resize', resizeCanvas);
+
+		// 初始化机枪位置
+		gun.x = game.width / 2;
+		gun.y = game.height - gun.height / 2 - 20;
+
+		// 创建星空背景
+		createStars();
+
+		// 事件监听
+		window.addEventListener('mousemove', handleMouseMove);
+		window.addEventListener('keydown', handleKeyDown);
+		window.addEventListener('keyup', handleKeyUp);
+		window.addEventListener('touchstart', handleTouchStart);
+		window.addEventListener('touchend', handleTouchEnd);
+		window.addEventListener('touchmove', handleTouchMove);
+
+		// 按钮事件
+		elements.startButton.addEventListener('click', startGame);
+		elements.pauseButton.addEventListener('click', togglePause);
+		elements.resumeButton.addEventListener('click', togglePause);
+		elements.manualModeBtn.addEventListener('click', () => setMode('manual'));
+		elements.autoModeBtn.addEventListener('click', () => setMode('auto'));
+	}
+
+	// 调整画布尺寸
+	function resizeCanvas() {
+		game.width = window.innerWidth;
+		game.height = window.innerHeight;
+		game.canvas.width = game.width;
+		game.canvas.height = game.height;
+
+		// 更新机枪位置
+		gun.x = game.width / 2;
+		gun.y = game.height - gun.height / 2 - 20;
+	}
+
+	// 创建星空背景
+	function createStars() {
+		const starsContainer = document.getElementById('stars');
+		starsContainer.innerHTML = '';
+
+		const starCount = Math.floor((game.width * game.height) / 15000);
+
+		for (let i = 0; i < starCount; i++) {
+			const star = document.createElement('div');
+			const size = Math.random() * 2 + 1;
+			const opacity = Math.random() * 0.8 + 0.2;
+
+			star.style.position = 'absolute';
+			star.style.width = `${size}px`;
+			star.style.height = `${size}px`;
+			star.style.backgroundColor = 'white';
+			star.style.borderRadius = '50%';
+			star.style.left = `${Math.random() * 100}%`;
+			star.style.top = `${Math.random() * 100}%`;
+			star.style.opacity = opacity;
+			star.style.animation = `twinkle ${Math.random() * 3 + 2}s infinite alternate`;
+
+			starsContainer.appendChild(star);
+		}
+
+		// 添加闪烁动画
+		const style = document.createElement('style');
+		style.textContent = `
+                @keyframes twinkle {
+                    from { opacity: 0.2; }
+                    to { opacity: 1; }
+                }
+            `;
+		document.head.appendChild(style);
+	}
+
+	// 开始游戏
+	function startGame() {
+		game.isRunning = true;
+		game.isPaused = false;
+		game.score = 0;
+		game.enemies = [];
+		game.bullets = [];
+		game.particles = [];
+		game.targetEnemy = null;
+
+		elements.startScreen.classList.add('hidden');
+		elements.pauseScreen.classList.add('hidden');
+
+		updateScore();
+		requestAnimationFrame(gameLoop);
+	}
+
+	// 游戏主循环
+	function gameLoop(timestamp) {
+		if (!game.isRunning || game.isPaused) return;
+
+		// 清空画布
+		game.ctx.clearRect(0, 0, game.width, game.height);
+
+		// 更新防护罩脉冲动画
+		game.shield.pulsePhase = (game.shield.pulsePhase + 0.02) % (Math.PI * 2);
+
+		// 自动模式逻辑 - 自动瞄准和射击
+		if (game.mode === 'auto' && game.isRunning) {
+			game.isShooting = true;
+			autoAim(); // 自动瞄准最近的敌人
+
+			// 平滑过渡到目标角度
+			const angleDiff = game.targetAngle - gun.angle;
+			if (Math.abs(angleDiff) > 0.1) {
+				gun.angle += angleDiff * 0.1; // 插值系数，可根据需要调整
+			} else {
+				gun.angle = game.targetAngle;
+			}
+		}
+
+		// 处理射击
+		if (game.isShooting && timestamp - game.lastShotTime > game.shotInterval) {
+			shoot();
+			game.lastShotTime = timestamp;
+		}
+
+		// 生成敌人
+		if (timestamp - game.lastEnemySpawn > game.enemySpawnInterval && game.enemies.length < game.maxEnemies) {
+			spawnEnemy();
+			game.lastEnemySpawn = timestamp;
+		}
+
+		// 检查防护罩碰撞
+		checkShieldCollisions();
+
+		// 更新和绘制子弹
+		updateBullets();
+
+		// 更新和绘制敌人
+		updateEnemies();
+
+		// 更新和绘制粒子效果
+		updateParticles();
+
+		// 绘制防护罩
+		drawShield();
+
+		// 绘制锁定指示器
+		drawTargetLock();
+
+		// 绘制机枪
+		drawGun();
+
+		// 更新敌人计数
+		elements.enemyCountDisplay.textContent = game.enemies.length;
+
+		// 循环
+		requestAnimationFrame(gameLoop);
+	}
+
+	// 绘制防护罩
+	function drawShield() {
+		game.ctx.save();
+
+		// 计算脉冲效果的缩放因子
+		const pulseScale = 1 + Math.sin(game.shield.pulsePhase) * 0.05;
+
+		// 绘制防护罩内部
+		game.ctx.beginPath();
+		game.ctx.arc(gun.x, gun.y, game.shield.radius * pulseScale, 0, Math.PI * 2);
+		game.ctx.fillStyle = game.shield.color;
+		game.ctx.fill();
+
+		// 绘制防护罩边框
+		game.ctx.beginPath();
+		game.ctx.arc(gun.x, gun.y, game.shield.radius * pulseScale, 0, Math.PI * 2);
+		game.ctx.strokeStyle = game.shield.borderColor;
+		game.ctx.lineWidth = 2;
+		game.ctx.stroke();
+
+		// 绘制防护罩装饰线条
+		game.ctx.strokeStyle = game.shield.borderColor;
+		game.ctx.lineWidth = 1;
+
+		// 45度角线条
+		for (let i = 0; i < 8; i++) {
+			const angle = (i * Math.PI / 4);
+			const x = Math.cos(angle) * game.shield.radius * pulseScale;
+			const y = Math.sin(angle) * game.shield.radius * pulseScale;
+			game.ctx.beginPath();
+			game.ctx.moveTo(gun.x, gun.y);
+			game.ctx.lineTo(gun.x + x, gun.y + y);
+			game.ctx.stroke();
+		}
+
+		game.ctx.restore();
+	}
+
+	// 检查防护罩与敌人的碰撞
+	function checkShieldCollisions() {
+		for (let i = game.enemies.length - 1; i >= 0; i--) {
+			const enemy = game.enemies[i];
+
+			// 计算敌人与机枪的距离
+			const distance = getDistance(gun.x, gun.y, enemy.x, enemy.y);
+
+			// 检查是否碰撞防护罩（考虑敌人半径）
+			if (distance < game.shield.radius + (enemy.width / 2)) {
+				// 创建碰撞爆炸效果
+				createExplosion(enemy.x, enemy.y);
+
+				// 加分
+				game.score += 15; // 防护罩消灭敌人得分更高
+				updateScore();
+
+				// 移除敌人
+				game.enemies.splice(i, 1);
+
+				// 如果消灭的是当前锁定目标，清除锁定
+				if (game.targetEnemy === enemy) {
+					game.targetEnemy = null;
+				}
+			}
+		}
+	}
+
+	// 自动瞄准最近的敌人
+	function autoAim() {
+		if (game.enemies.length === 0) {
+			game.targetEnemy = null;
+			return;
+		}
+
+		// 找到最近的敌人
+		let closestEnemy = game.enemies[0];
+		let closestDistance = getDistance(gun.x, gun.y, closestEnemy.x, closestEnemy.y);
+
+		for (let enemy of game.enemies) {
+			const distance = getDistance(gun.x, gun.y, enemy.x, enemy.y);
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestEnemy = enemy;
+			}
+		}
+
+		game.targetEnemy = closestEnemy;
+
+		// 计算目标角度
+		const dx = game.targetEnemy.x - gun.x;
+		const dy = gun.y - game.targetEnemy.y;
+		game.targetAngle = Math.atan2(dx, dy);
+	}
+
+	// 计算两点之间的距离
+	function getDistance(x1, y1, x2, y2) {
+		const dx = x2 - x1;
+		const dy = y2 - y1;
+		return Math.sqrt(dx * dx + dy * dy);
+	}
+
+	// 绘制目标锁定指示器
+	function drawTargetLock() {
+		if (game.mode === 'auto' && game.targetEnemy) {
+			game.ctx.save();
+			game.ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
+			game.ctx.lineWidth = 2;
+
+			// 绘制锁定环
+			const radius = game.targetEnemy.width / 2 + 15;
+			game.ctx.beginPath();
+			game.ctx.arc(game.targetEnemy.x, game.targetEnemy.y, radius, 0, Math.PI * 2);
+			game.ctx.stroke();
+
+			// 绘制锁定十字线
+			const crossSize = 8;
+			// 水平线
+			game.ctx.beginPath();
+			game.ctx.moveTo(game.targetEnemy.x - crossSize, game.targetEnemy.y);
+			game.ctx.lineTo(game.targetEnemy.x + crossSize, game.targetEnemy.y);
+			game.ctx.stroke();
+
+			// 垂直线
+			game.ctx.beginPath();
+			game.ctx.moveTo(game.targetEnemy.x, game.targetEnemy.y - crossSize);
+			game.ctx.lineTo(game.targetEnemy.x, game.targetEnemy.y + crossSize);
+			game.ctx.stroke();
+
+			game.ctx.restore();
+		}
+	}
+
+	// 绘制机枪
+	function drawGun() {
+		game.ctx.save();
+		game.ctx.translate(gun.x, gun.y);
+		game.ctx.rotate(gun.angle);
+
+		// 枪身
+		game.ctx.fillStyle = gun.color;
+		game.ctx.fillRect(-gun.width / 4, 0, gun.width / 2, gun.height / 2);
+
+		// 枪管
+		game.ctx.fillStyle = '#1E293B';
+		game.ctx.fillRect(-gun.width / 10, -gun.height / 2, gun.width / 5, gun.height / 2);
+
+		// 枪口
+		game.ctx.fillStyle = '#EF4444';
+		game.ctx.beginPath();
+		game.ctx.arc(0, -gun.height / 2, gun.width / 15, 0, Math.PI * 2);
+		game.ctx.fill();
+
+		game.ctx.restore();
+	}
+
+	// 射击
+	function shoot() {
+		// 计算子弹起始位置（枪口）
+		const bulletX = gun.x + Math.sin(gun.angle) * (-gun.height / -2);
+		const bulletY = gun.y - Math.cos(gun.angle) * (gun.height / 2);
+
+		// 创建子弹
+		game.bullets.push({
+			x: bulletX,
+			y: bulletY,
+			width: 6,
+			height: 12,
+			speed: 15,
+			angle: gun.angle,
+			color: '#EF4444'
+		});
+
+		// 枪口火光粒子效果
+		createMuzzleFlash(bulletX, bulletY);
+	}
+
+	// 创建枪口火光效果
+	function createMuzzleFlash(x, y) {
+		for (let i = 0; i < 5; i++) {
+			game.particles.push({
+				x: x,
+				y: y,
+				radius: Math.random() * 3 + 1,
+				speed: Math.random() * 3 + 1,
+				angle: gun.angle + (Math.random() * 0.5 - 0.25),
+				color: `rgba(239, 68, 68, ${Math.random() * 0.8 + 0.2})`,
+				life: Math.random() * 30 + 20
+			});
+		}
+	}
+
+	// 更新子弹
+	function updateBullets() {
+		for (let i = game.bullets.length - 1; i >= 0; i--) {
+			const bullet = game.bullets[i];
+
+			// 移动子弹
+			bullet.x += Math.sin(bullet.angle) * bullet.speed;
+			bullet.y -= Math.cos(bullet.angle) * bullet.speed;
+
+			// 绘制子弹
+			game.ctx.save();
+			game.ctx.translate(bullet.x, bullet.y);
+			game.ctx.rotate(bullet.angle);
+			game.ctx.fillStyle = bullet.color;
+			game.ctx.fillRect(-bullet.width / 2, -bullet.height / 2, bullet.width, bullet.height);
+			game.ctx.restore();
+
+			// 移除超出屏幕的子弹
+			if (bullet.x < 0 || bullet.x > game.width || bullet.y < 0 || bullet.y > game.height) {
+				game.bullets.splice(i, 1);
+			}
+		}
+	}
+
+	// 生成敌人
+	function spawnEnemy() {
+		// 随机敌人类型
+		const enemyTypes = [
+			{width: 40, height: 30, speed: 2, health: 3, color: '#10B981'}, // 普通敌人
+			{width: 50, height: 40, speed: 1.5, health: 5, color: '#F59E0B'}, // 大型敌人
+			{width: 30, height: 25, speed: 3, health: 2, color: '#6366F1'} // 快速敌人
+		];
+
+		const type = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+
+		// 随机x位置（屏幕顶部）
+		const x = Math.random() * (game.width - type.width) + type.width / 2;
+
+		game.enemies.push({
+			x: x,
+			y: -type.height,
+			width: type.width,
+			height: type.height,
+			speed: type.speed,
+			health: type.health,
+			maxHealth: type.health,
+			color: type.color,
+			targetX: gun.x,
+			targetY: gun.y,
+			angle: 0,
+			hitFlash: 0
+		});
+	}
+
+	// 更新敌人
+	function updateEnemies() {
+		for (let i = game.enemies.length - 1; i >= 0; i--) {
+			const enemy = game.enemies[i];
+
+			// 更新目标位置（机枪位置）
+			enemy.targetX = gun.x;
+			enemy.targetY = gun.y;
+
+			// 计算朝向机枪的角度
+			const dx = enemy.targetX - enemy.x;
+			const dy = enemy.targetY - enemy.y;
+			enemy.angle = Math.atan2(dx, dy);
+
+			// 向机枪移动
+			enemy.x += Math.sin(enemy.angle) * enemy.speed;
+			enemy.y += Math.cos(enemy.angle) * enemy.speed;
+
+			// 绘制敌人
+			game.ctx.save();
+			game.ctx.translate(enemy.x, enemy.y);
+			game.ctx.rotate(enemy.angle);
+
+			// 敌人主体
+			game.ctx.fillStyle = enemy.hitFlash > 0 ? '#FFFFFF' : enemy.color;
+			game.ctx.fillRect(-enemy.width / 2, -enemy.height / 2, enemy.width, enemy.height);
+
+			// 敌人细节
+			game.ctx.fillStyle = '#1E293B';
+			game.ctx.fillRect(-enemy.width / 4, -enemy.height / 2, enemy.width / 2, enemy.height / 4);
+
+			// 绘制健康条
+			game.ctx.fillStyle = '#EF4444';
+			game.ctx.fillRect(-enemy.width / 2, -enemy.height / 2 - 5, enemy.width * (enemy.health / enemy.maxHealth), 3);
+
+			game.ctx.restore();
+
+			// 减少击中闪烁效果
+			if (enemy.hitFlash > 0) {
+				enemy.hitFlash--;
+			}
+
+			// 检测碰撞
+			checkBulletCollisions(enemy, i);
+
+			// 移除超出屏幕底部的敌人
+			if (enemy.y > game.height + enemy.height) {
+				game.enemies.splice(i, 1);
+				// 如果移除的是当前锁定目标，清除锁定
+				if (game.targetEnemy === enemy) {
+					game.targetEnemy = null;
+				}
+			}
+		}
+	}
+
+	// 检测子弹与敌人碰撞
+	function checkBulletCollisions(enemy, enemyIndex) {
+		for (let j = game.bullets.length - 1; j >= 0; j--) {
+			const bullet = game.bullets[j];
+
+			// 简化的碰撞检测
+			if (
+					bullet.x > enemy.x - enemy.width / 2 &&
+					bullet.x < enemy.x + enemy.width / 2 &&
+					bullet.y > enemy.y - enemy.height / 2 &&
+					bullet.y < enemy.y + enemy.height / 2
+			) {
+				// 敌人受伤
+				enemy.health--;
+				enemy.hitFlash = 5;
+
+				// 创建击中粒子效果
+				createHitParticles(enemy.x, enemy.y, enemy.color);
+
+				// 移除子弹
+				game.bullets.splice(j, 1);
+
+				// 敌人死亡
+				if (enemy.health <= 0) {
+					game.enemies.splice(enemyIndex, 1);
+					game.score += 10; // 基础分
+					game.score += Math.floor(enemy.maxHealth * 2); // 按生命值加分
+					updateScore();
+
+					// 创建爆炸效果
+					createExplosion(enemy.x, enemy.y);
+
+					// 如果消灭的是当前锁定目标，清除锁定
+					if (game.targetEnemy === enemy) {
+						game.targetEnemy = null;
+					}
+
+					break;
+				}
+			}
+		}
+	}
+
+	// 创建击中粒子效果
+	function createHitParticles(x, y, color) {
+		for (let i = 0; i < 8; i++) {
+			game.particles.push({
+				x: x,
+				y: y,
+				radius: Math.random() * 3 + 1,
+				speed: Math.random() * 4 + 1,
+				angle: Math.random() * Math.PI * 2,
+				color: color,
+				life: Math.random() * 40 + 20
+			});
+		}
+	}
+
+	// 创建爆炸效果
+	function createExplosion(x, y) {
+		for (let i = 0; i < 20; i++) {
+			game.particles.push({
+				x: x,
+				y: y,
+				radius: Math.random() * 5 + 2,
+				speed: Math.random() * 6 + 2,
+				angle: Math.random() * Math.PI * 2,
+				color: `rgba(239, 68, 68, ${Math.random() * 0.8 + 0.2})`,
+				life: Math.random() * 60 + 40
+			});
+		}
+	}
+
+	// 更新粒子效果
+	function updateParticles() {
+		for (let i = game.particles.length - 1; i >= 0; i--) {
+			const particle = game.particles[i];
+
+			// 移动粒子
+			particle.x += Math.sin(particle.angle) * particle.speed;
+			particle.y -= Math.cos(particle.angle) * particle.speed;
+
+			// 减少生命值
+			particle.life--;
+
+			// 绘制粒子
+			game.ctx.beginPath();
+			game.ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+			game.ctx.fillStyle = particle.color;
+			game.ctx.fill();
+
+			// 移除死亡粒子
+			if (particle.life <= 0) {
+				game.particles.splice(i, 1);
+			}
+		}
+	}
+
+	// 更新分数显示
+	function updateScore() {
+		elements.scoreDisplay.textContent = game.score;
+		elements.pauseScoreDisplay.textContent = game.score;
+	}
+
+	// 切换暂停状态
+	function togglePause() {
+		if (!game.isRunning) return;
+
+		game.isPaused = !game.isPaused;
+
+		if (!game.isPaused) {
+			elements.pauseScreen.classList.add('hidden');
+			requestAnimationFrame(gameLoop);
+		} else {
+			elements.pauseScreen.classList.remove('hidden');
+		}
+	}
+
+	// 设置游戏模式
+	function setMode(mode) {
+		game.mode = mode;
+
+		if (mode === 'manual') {
+			elements.manualModeBtn.classList.add('bg-primary', 'text-white');
+			elements.manualModeBtn.classList.remove('text-light/70');
+			elements.autoModeBtn.classList.remove('bg-primary', 'text-white');
+			elements.autoModeBtn.classList.add('text-light/70');
+			game.isShooting = false;
+			game.targetEnemy = null; // 清除自动瞄准目标
+		} else {
+			elements.autoModeBtn.classList.add('bg-primary', 'text-white');
+			elements.autoModeBtn.classList.remove('text-light/70');
+			elements.manualModeBtn.classList.remove('bg-primary', 'text-white');
+			elements.manualModeBtn.classList.add('text-light/70');
+		}
+	}
+
+	// 事件处理函数
+	function handleMouseMove(e) {
+		// 手动模式下才响应鼠标移动
+		if (game.mode === 'manual') {
+			game.mouseX = e.clientX;
+			game.mouseY = e.clientY;
+
+			// 计算机枪角度
+			const dx = game.mouseX - gun.x;
+			const dy = gun.y - game.mouseY;
+			gun.angle = Math.atan2(dx, dy);
+		}
+	}
+
+	function handleKeyDown(e) {
+		if (e.code === 'Space' && game.mode === 'manual') {
+			e.preventDefault(); // 防止空格滚动页面
+			game.isShooting = true;
+		} else if (e.code === 'KeyP') {
+			togglePause();
+		}
+	}
+
+	function handleKeyUp(e) {
+		if (e.code === 'Space' && game.mode === 'manual') {
+			game.isShooting = false;
+		}
+	}
+
+	// 触摸事件处理（移动设备）
+	function handleTouchStart(e) {
+		e.preventDefault();
+		if (game.mode === 'manual') {
+			game.isShooting = true;
+		}
+		handleTouchMove(e);
+	}
+
+	function handleTouchEnd(e) {
+		e.preventDefault();
+		if (game.mode === 'manual') {
+			game.isShooting = false;
+		}
+	}
+
+	function handleTouchMove(e) {
+		e.preventDefault();
+		// 手动模式下才响应触摸移动
+		if (e.touches.length > 0 && game.mode === 'manual') {
+			game.mouseX = e.touches[0].clientX;
+			game.mouseY = e.touches[0].clientY;
+
+			// 计算机枪角度
+			const dx = game.mouseX - gun.x;
+			const dy = gun.y - game.mouseY;
+			gun.angle = Math.atan2(dx, dy);
+		}
+	}
+
+	// 初始化游戏
+	window.addEventListener('load', initGame);
+</script>
 </body>
 </html>
