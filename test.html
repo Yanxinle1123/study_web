@@ -194,18 +194,18 @@
 		enemies: [],
 		bullets: [],
 		lastShotTime: 0,
-		shotInterval: 80,
+		shotInterval: 60,
 		mouseX: 0,
 		mouseY: 0,
 		isShooting: false,
 		mode: 'manual', // 'manual' 或 'auto'
-		enemySpawnInterval: 200, // 敌人生成间隔(ms)
+		enemySpawnInterval: 400, // 敌人生成间隔(ms)
 		lastEnemySpawn: 0,
-		maxEnemies: 5,
+		maxEnemies: 8,
 		particles: [],
 		targetEnemy: null, // 当前锁定的敌人
 		shield: {
-			radius: 120, // 防护罩半径
+			radius: 60, // 防护罩半径
 			color: 'rgba(139, 92, 246, 0.3)', // 防护罩颜色
 			borderColor: 'rgba(139, 92, 246, 0.8)', // 防护罩边框颜色
 			pulsePhase: 0 // 用于脉冲动画
@@ -351,11 +351,7 @@
 
 			// 平滑过渡到目标角度
 			const angleDiff = game.targetAngle - gun.angle;
-			if (Math.abs(angleDiff) > 0.1) {
-				gun.angle += angleDiff * 0.1; // 插值系数，可根据需要调整
-			} else {
-				gun.angle = game.targetAngle;
-			}
+			gun.angle += angleDiff * 0.2; // 插值系数，可根据需要调整
 		}
 
 		// 处理射击
