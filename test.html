@@ -194,14 +194,14 @@
 		enemies: [],
 		bullets: [],
 		lastShotTime: 0,
-		shotInterval: 80,
+		shotInterval: 100,
 		mouseX: 0,
 		mouseY: 0,
 		isShooting: false,
 		mode: 'auto', // 默认模式为自动
-		enemySpawnInterval: 1, // 敌人生成间隔(ms)
+		enemySpawnInterval: 200, // 敌人生成间隔(ms)
 		lastEnemySpawn: 0,
-		maxEnemies: 1,
+		maxEnemies: 30,
 		particles: [],
 		targetEnemy: null, // 当前锁定的敌人
 		shield: {
@@ -620,7 +620,7 @@
 		}
 	}
 
-	// 自动瞄准最近的敌人
+	// 自动瞄准最近的敌人（带预判）
 	function autoAim() {
 		if (game.enemies.length === 0) return;
 
@@ -637,11 +637,47 @@
 			const targetEnemy = enemiesByDistance[i % enemiesByDistance.length];
 
 			if (targetEnemy) {
-				const dx = targetEnemy.x - gun.x;
-				const dy = gun.y - targetEnemy.y;
+				// 计算预判位置
+				const predictedPos = calculatePredictedPosition(gun, targetEnemy);
+
+				const dx = predictedPos.x - gun.x;
+				const dy = gun.y - predictedPos.y;
 				gun.targetAngle = Math.atan2(dx, dy);
 			}
 		}
+	}
+
+	// 计算预判位置
+	function calculatePredictedPosition(gun, enemy) {
+		// 子弹速度
+		const bulletSpeed = 15;
+
+		// 计算敌人当前速度向量
+		const enemyVx = Math.sin(enemy.angle) * enemy.speed;
+		const enemyVy = Math.cos(enemy.angle) * enemy.speed;
+
+		// 计算机枪到敌人的距离
+		const distance = getDistance(gun.x, gun.y, enemy.x, enemy.y);
+
+		// 估算子弹到达时间
+		const timeToHit = distance / bulletSpeed;
+
+		// 预判敌人位置
+		const predictedX = enemy.x + enemyVx * timeToHit;
+		const predictedY = enemy.y + enemyVy * timeToHit;
+
+		// 进行二次修正，重新计算更精确的时间
+		const newDistance = getDistance(gun.x, gun.y, predictedX, predictedY);
+		const correctedTime = newDistance / bulletSpeed;
+
+		// 最终预判位置
+		const finalPredictedX = enemy.x + enemyVx * correctedTime;
+		const finalPredictedY = enemy.y + enemyVy * correctedTime;
+
+		return {
+			x: finalPredictedX,
+			y: finalPredictedY
+		};
 	}
 
 	// 计算两点之间的距离
