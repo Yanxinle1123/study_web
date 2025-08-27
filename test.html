@@ -151,10 +151,9 @@
 		<div class="flex items-center gap-3">
 			<span class="font-game text-light/80">模式:</span>
 			<div class="flex rounded-full bg-dark border border-primary/50 p-1">
-				<button class="px-4 py-1 rounded-full bg-primary text-white font-game text-sm active" id="manualMode">
-					手动
+				<button class="px-4 py-1 rounded-full bg-primary text-white font-game text-sm active" id="autoMode">
+					自动
 				</button>
-				<button class="px-4 py-1 rounded-full text-light/70 font-game text-sm" id="autoMode">自动</button>
 			</div>
 		</div>
 
@@ -198,10 +197,10 @@
 		mouseX: 0,
 		mouseY: 0,
 		isShooting: false,
-		mode: 'manual', // 'manual' 或 'auto'
-		enemySpawnInterval: 400, // 敌人生成间隔(ms)
+		mode: 'auto', // 默认模式为自动
+		enemySpawnInterval: 200, // 敌人生成间隔(ms)
 		lastEnemySpawn: 0,
-		maxEnemies: 8,
+		maxEnemies: 10,
 		particles: [],
 		targetEnemy: null, // 当前锁定的敌人
 		shield: {
@@ -232,7 +231,6 @@
 		resumeButton: document.getElementById('resumeButton'),
 		scoreDisplay: document.getElementById('score'),
 		enemyCountDisplay: document.getElementById('enemy-count'),
-		manualModeBtn: document.getElementById('manualMode'),
 		autoModeBtn: document.getElementById('autoMode'),
 		pauseScoreDisplay: document.getElementById('pauseScore')
 	};
@@ -253,20 +251,17 @@
 		// 创建星空背景
 		createStars();
 
-		// 事件监听
+		// 初始化游戏事件监听
 		window.addEventListener('mousemove', handleMouseMove);
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('keyup', handleKeyUp);
-		window.addEventListener('touchstart', handleTouchStart);
-		window.addEventListener('touchend', handleTouchEnd);
-		window.addEventListener('touchmove', handleTouchMove);
 
 		// 按钮事件
 		elements.startButton.addEventListener('click', startGame);
 		elements.pauseButton.addEventListener('click', togglePause);
 		elements.resumeButton.addEventListener('click', togglePause);
-		elements.manualModeBtn.addEventListener('click', () => setMode('manual'));
 		elements.autoModeBtn.addEventListener('click', () => setMode('auto'));
+		setMode('auto'); // 确保初始化时设置为自动模式
 	}
 
 	// 调整画布尺寸
@@ -345,14 +340,12 @@
 		game.shield.pulsePhase = (game.shield.pulsePhase + 0.02) % (Math.PI * 2);
 
 		// 自动模式逻辑 - 自动瞄准和射击
-		if (game.mode === 'auto' && game.isRunning) {
-			game.isShooting = true;
-			autoAim(); // 自动瞄准最近的敌人
+		game.isShooting = true;
+		autoAim();
 
-			// 平滑过渡到目标角度
-			const angleDiff = game.targetAngle - gun.angle;
-			gun.angle += angleDiff * 0.2; // 插值系数，可根据需要调整
-		}
+		// 平滑过渡到目标角度
+		const angleDiff = game.targetAngle - gun.angle;
+		gun.angle += angleDiff * 0.2;
 
 		// 处理射击
 		if (game.isShooting && timestamp - game.lastShotTime > game.shotInterval) {
@@ -814,50 +807,24 @@
 
 	// 设置游戏模式
 	function setMode(mode) {
-		game.mode = mode;
-
-		if (mode === 'manual') {
-			elements.manualModeBtn.classList.add('bg-primary', 'text-white');
-			elements.manualModeBtn.classList.remove('text-light/70');
-			elements.autoModeBtn.classList.remove('bg-primary', 'text-white');
-			elements.autoModeBtn.classList.add('text-light/70');
-			game.isShooting = false;
-			game.targetEnemy = null; // 清除自动瞄准目标
-		} else {
-			elements.autoModeBtn.classList.add('bg-primary', 'text-white');
-			elements.autoModeBtn.classList.remove('text-light/70');
-			elements.manualModeBtn.classList.remove('bg-primary', 'text-white');
-			elements.manualModeBtn.classList.add('text-light/70');
-		}
+		game.mode = 'auto';
+		elements.autoModeBtn.classList.add('bg-primary', 'text-white');
+		elements.autoModeBtn.classList.remove('text-light/70');
 	}
 
 	// 事件处理函数
 	function handleMouseMove(e) {
-		// 手动模式下才响应鼠标移动
-		if (game.mode === 'manual') {
-			game.mouseX = e.clientX;
-			game.mouseY = e.clientY;
-
-			// 计算机枪角度
-			const dx = game.mouseX - gun.x;
-			const dy = gun.y - game.mouseY;
-			gun.angle = Math.atan2(dx, dy);
-		}
+		// 无需手动模式逻辑
 	}
 
 	function handleKeyDown(e) {
-		if (e.code === 'Space' && game.mode === 'manual') {
-			e.preventDefault(); // 防止空格滚动页面
-			game.isShooting = true;
-		} else if (e.code === 'KeyP') {
+		if (e.code === 'KeyP') {
 			togglePause();
 		}
 	}
 
 	function handleKeyUp(e) {
-		if (e.code === 'Space' && game.mode === 'manual') {
-			game.isShooting = false;
-		}
+		// 无需手动模式逻辑
 	}
 
 	// 触摸事件处理（移动设备）
