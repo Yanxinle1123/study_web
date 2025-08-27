@@ -7,6 +7,7 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 	<link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
+
 	<!-- Tailwind 配置 -->
 	<script>
 		tailwind.config = {
@@ -193,14 +194,14 @@
 		enemies: [],
 		bullets: [],
 		lastShotTime: 0,
-		shotInterval: 60,
+		shotInterval: 80,
 		mouseX: 0,
 		mouseY: 0,
 		isShooting: false,
 		mode: 'auto', // 默认模式为自动
-		enemySpawnInterval: 200, // 敌人生成间隔(ms)
+		enemySpawnInterval: 1, // 敌人生成间隔(ms)
 		lastEnemySpawn: 0,
-		maxEnemies: 10,
+		maxEnemies: 1,
 		particles: [],
 		targetEnemy: null, // 当前锁定的敌人
 		shield: {
@@ -213,14 +214,68 @@
 	};
 
 	// 机枪属性
-	const gun = {
-		x: 0,
-		y: 0,
-		width: 80,
-		height: 100,
-		angle: 0,
-		color: '#F59E0B'
-	};
+	const guns = [
+		{
+			x: 0,
+			y: 0,
+			width: 80,
+			height: 100,
+			angle: 0,
+			targetAngle: 0,
+			color: '#F59E0B',
+			shield: {
+				radius: 60,
+				color: 'rgba(139, 92, 246, 0.3)',
+				borderColor: 'rgba(139, 92, 246, 0.8)',
+				pulsePhase: 0
+			}
+		},
+		{
+			x: 0,
+			y: 0,
+			width: 80,
+			height: 100,
+			angle: 0,
+			targetAngle: 0,
+			color: '#F59E0B',
+			shield: {
+				radius: 60,
+				color: 'rgba(139, 92, 246, 0.3)',
+				borderColor: 'rgba(139, 92, 246, 0.8)',
+				pulsePhase: 0
+			}
+		},
+		{
+			x: 0,
+			y: 0,
+			width: 80,
+			height: 100,
+			angle: 0,
+			targetAngle: 0,
+			color: '#F59E0B',
+			shield: {
+				radius: 60,
+				color: 'rgba(139, 92, 246, 0.3)',
+				borderColor: 'rgba(139, 92, 246, 0.8)',
+				pulsePhase: 0
+			}
+		},
+		{
+			x: 0,
+			y: 0,
+			width: 80,
+			height: 100,
+			angle: 0,
+			targetAngle: 0,
+			color: '#F59E0B',
+			shield: {
+				radius: 60,
+				color: 'rgba(139, 92, 246, 0.3)',
+				borderColor: 'rgba(139, 92, 246, 0.8)',
+				pulsePhase: 0
+			}
+		}
+	];
 
 	// DOM元素
 	const elements = {
@@ -245,8 +300,7 @@
 		window.addEventListener('resize', resizeCanvas);
 
 		// 初始化机枪位置
-		gun.x = game.width / 2;
-		gun.y = game.height - gun.height / 2 - 20;
+		initGuns();
 
 		// 创建星空背景
 		createStars();
@@ -272,8 +326,30 @@
 		game.canvas.height = game.height;
 
 		// 更新机枪位置
-		gun.x = game.width / 2;
-		gun.y = game.height - gun.height / 2 - 20;
+		initGuns();
+	}
+
+	// 初始化机枪位置
+	function initGuns() {
+		const spacing = game.width / 5;
+		for (let i = 0; i < guns.length; i++) {
+			guns[i].x = spacing * (i + 1);
+			guns[i].y = game.height - guns[i].height / 2 - 80; // 往上移动60像素
+		}
+
+		// 初始化旗子位置
+		game.flag = {
+			x: game.width / 2,
+			y: game.height - 30,
+			width: 40,
+			height: 60,
+			shield: {
+				radius: 50,
+				color: 'rgba(139, 92, 246, 0.3)',
+				borderColor: 'rgba(139, 92, 246, 0.8)',
+				pulsePhase: 0
+			}
+		};
 	}
 
 	// 创建星空背景
@@ -337,20 +413,27 @@
 		game.ctx.clearRect(0, 0, game.width, game.height);
 
 		// 更新防护罩脉冲动画
-		game.shield.pulsePhase = (game.shield.pulsePhase + 0.02) % (Math.PI * 2);
+		for (let gun of guns) {
+			gun.shield.pulsePhase = (gun.shield.pulsePhase + 0.02) % (Math.PI * 2);
+		}
+		// 更新旗子防护罩脉冲动画
+		game.flag.shield.pulsePhase = (game.flag.shield.pulsePhase + 0.02) % (Math.PI * 2);
 
-		// 自动模式逻辑 - 自动瞄准和射击
-		game.isShooting = true;
+		// 自动瞄准和射击
 		autoAim();
 
-		// 平滑过渡到目标角度
-		const angleDiff = game.targetAngle - gun.angle;
-		gun.angle += angleDiff * 0.2;
+		// 平滑过渡到目标角度和射击
+		for (let i = 0; i < guns.length; i++) {
+			const gun = guns[i];
+			const angleDiff = gun.targetAngle - gun.angle;
+			gun.angle += angleDiff * 0.2;
 
-		// 处理射击
-		if (game.isShooting && timestamp - game.lastShotTime > game.shotInterval) {
-			shoot();
-			game.lastShotTime = timestamp;
+			// 为每个机枪单独处理射击时间
+			if (!gun.lastShotTime) gun.lastShotTime = 0;
+			if (timestamp - gun.lastShotTime > game.shotInterval) {
+				shoot(gun);
+				gun.lastShotTime = timestamp;
+			}
 		}
 
 		// 生成敌人
@@ -374,11 +457,14 @@
 		// 绘制防护罩
 		drawShield();
 
+		// 绘制旗子和旗子防护罩
+		drawFlag();
+
 		// 绘制锁定指示器
 		drawTargetLock();
 
 		// 绘制机枪
-		drawGun();
+		drawGuns();
 
 		// 更新敌人计数
 		elements.enemyCountDisplay.textContent = game.enemies.length;
@@ -389,38 +475,94 @@
 
 	// 绘制防护罩
 	function drawShield() {
+		for (let gun of guns) {
+			game.ctx.save();
+
+			// 计算脉冲效果的缩放因子
+			const pulseScale = 1 + Math.sin(gun.shield.pulsePhase) * 0.05;
+
+			// 绘制防护罩内部
+			game.ctx.beginPath();
+			game.ctx.arc(gun.x, gun.y, gun.shield.radius * pulseScale, 0, Math.PI * 2);
+			game.ctx.fillStyle = gun.shield.color;
+			game.ctx.fill();
+
+			// 绘制防护罩边框
+			game.ctx.beginPath();
+			game.ctx.arc(gun.x, gun.y, gun.shield.radius * pulseScale, 0, Math.PI * 2);
+			game.ctx.strokeStyle = gun.shield.borderColor;
+			game.ctx.lineWidth = 2;
+			game.ctx.stroke();
+
+			// 绘制防护罩装饰线条
+			game.ctx.strokeStyle = gun.shield.borderColor;
+			game.ctx.lineWidth = 1;
+
+			// 45度角线条
+			for (let i = 0; i < 8; i++) {
+				const angle = (i * Math.PI / 4);
+				const x = Math.cos(angle) * gun.shield.radius * pulseScale;
+				const y = Math.sin(angle) * gun.shield.radius * pulseScale;
+				game.ctx.beginPath();
+				game.ctx.moveTo(gun.x, gun.y);
+				game.ctx.lineTo(gun.x + x, gun.y + y);
+				game.ctx.stroke();
+			}
+
+			game.ctx.restore();
+		}
+	}
+
+	// 绘制旗子和旗子防护罩
+	function drawFlag() {
+		if (!game.flag) return;
+
 		game.ctx.save();
 
-		// 计算脉冲效果的缩放因子
-		const pulseScale = 1 + Math.sin(game.shield.pulsePhase) * 0.05;
+		// 绘制旗子防护罩
+		const pulseScale = 1 + Math.sin(game.flag.shield.pulsePhase) * 0.05;
 
 		// 绘制防护罩内部
 		game.ctx.beginPath();
-		game.ctx.arc(gun.x, gun.y, game.shield.radius * pulseScale, 0, Math.PI * 2);
-		game.ctx.fillStyle = game.shield.color;
+		game.ctx.arc(game.flag.x, game.flag.y, game.flag.shield.radius * pulseScale, 0, Math.PI * 2);
+		game.ctx.fillStyle = game.flag.shield.color;
 		game.ctx.fill();
 
 		// 绘制防护罩边框
 		game.ctx.beginPath();
-		game.ctx.arc(gun.x, gun.y, game.shield.radius * pulseScale, 0, Math.PI * 2);
-		game.ctx.strokeStyle = game.shield.borderColor;
+		game.ctx.arc(game.flag.x, game.flag.y, game.flag.shield.radius * pulseScale, 0, Math.PI * 2);
+		game.ctx.strokeStyle = game.flag.shield.borderColor;
 		game.ctx.lineWidth = 2;
 		game.ctx.stroke();
 
 		// 绘制防护罩装饰线条
-		game.ctx.strokeStyle = game.shield.borderColor;
+		game.ctx.strokeStyle = game.flag.shield.borderColor;
 		game.ctx.lineWidth = 1;
 
 		// 45度角线条
 		for (let i = 0; i < 8; i++) {
 			const angle = (i * Math.PI / 4);
-			const x = Math.cos(angle) * game.shield.radius * pulseScale;
-			const y = Math.sin(angle) * game.shield.radius * pulseScale;
+			const x = Math.cos(angle) * game.flag.shield.radius * pulseScale;
+			const y = Math.sin(angle) * game.flag.shield.radius * pulseScale;
 			game.ctx.beginPath();
-			game.ctx.moveTo(gun.x, gun.y);
-			game.ctx.lineTo(gun.x + x, gun.y + y);
+			game.ctx.moveTo(game.flag.x, game.flag.y);
+			game.ctx.lineTo(game.flag.x + x, game.flag.y + y);
 			game.ctx.stroke();
 		}
+
+		// 绘制旗杆
+		game.ctx.fillStyle = '#8B5A2B';
+		game.ctx.fillRect(game.flag.x - 2, game.flag.y - game.flag.height / 2, 4, game.flag.height);
+
+		// 绘制旗子
+		game.ctx.fillStyle = '#EF4444';
+		game.ctx.fillRect(game.flag.x + 2, game.flag.y - game.flag.height / 2, game.flag.width - 4, game.flag.height / 2);
+
+		// 绘制旗子上的图案
+		game.ctx.fillStyle = '#FFFFFF';
+		game.ctx.font = '16px Arial';
+		game.ctx.textAlign = 'center';
+		game.ctx.fillText('★', game.flag.x + game.flag.width / 2 - 2, game.flag.y - game.flag.height / 4);
 
 		game.ctx.restore();
 	}
@@ -430,24 +572,49 @@
 		for (let i = game.enemies.length - 1; i >= 0; i--) {
 			const enemy = game.enemies[i];
 
-			// 计算敌人与机枪的距离
-			const distance = getDistance(gun.x, gun.y, enemy.x, enemy.y);
+			// 检查机枪防护罩碰撞
+			for (let gun of guns) {
+				// 计算敌人与机枪的距离
+				const distance = getDistance(gun.x, gun.y, enemy.x, enemy.y);
 
-			// 检查是否碰撞防护罩（考虑敌人半径）
-			if (distance < game.shield.radius + (enemy.width / 2)) {
-				// 创建碰撞爆炸效果
-				createExplosion(enemy.x, enemy.y);
+				// 检查是否碰撞防护罩（考虑敌人半径）
+				if (distance < gun.shield.radius + (enemy.width / 2)) {
+					// 创建碰撞爆炸效果
+					createExplosion(enemy.x, enemy.y);
 
-				// 加分
-				game.score += 15; // 防护罩消灭敌人得分更高
-				updateScore();
+					// 加分
+					game.score += 15; // 防护罩消灭敌人得分更高
+					updateScore();
 
-				// 移除敌人
-				game.enemies.splice(i, 1);
+					// 移除敌人
+					game.enemies.splice(i, 1);
 
-				// 如果消灭的是当前锁定目标，清除锁定
-				if (game.targetEnemy === enemy) {
-					game.targetEnemy = null;
+					// 如果消灭的是当前锁定目标，清除锁定
+					if (game.targetEnemy === enemy) {
+						game.targetEnemy = null;
+					}
+					break;
+				}
+			}
+
+			// 检查旗子防护罩碰撞
+			if (game.flag && i < game.enemies.length) {
+				const flagDistance = getDistance(game.flag.x, game.flag.y, enemy.x, enemy.y);
+				if (flagDistance < game.flag.shield.radius + (enemy.width / 2)) {
+					// 创建碰撞爆炸效果
+					createExplosion(enemy.x, enemy.y);
+
+					// 加分
+					game.score += 20; // 旗子防护罩消灭敌人得分更高
+					updateScore();
+
+					// 移除敌人
+					game.enemies.splice(i, 1);
+
+					// 如果消灭的是当前锁定目标，清除锁定
+					if (game.targetEnemy === enemy) {
+						game.targetEnemy = null;
+					}
 				}
 			}
 		}
@@ -455,29 +622,26 @@
 
 	// 自动瞄准最近的敌人
 	function autoAim() {
-		if (game.enemies.length === 0) {
-			game.targetEnemy = null;
-			return;
-		}
+		if (game.enemies.length === 0) return;
 
-		// 找到最近的敌人
-		let closestEnemy = game.enemies[0];
-		let closestDistance = getDistance(gun.x, gun.y, closestEnemy.x, closestEnemy.y);
+		// 找到离旗子最近的敌人们，为每个机枪分配
+		const enemiesByDistance = game.enemies.slice().sort((a, b) => {
+			const distanceA = getDistance(game.flag.x, game.flag.y, a.x, a.y);
+			const distanceB = getDistance(game.flag.x, game.flag.y, b.x, b.y);
+			return distanceA - distanceB;
+		});
 
-		for (let enemy of game.enemies) {
-			const distance = getDistance(gun.x, gun.y, enemy.x, enemy.y);
-			if (distance < closestDistance) {
-				closestDistance = distance;
-				closestEnemy = enemy;
+		// 为每个机枪分配离旗子最近的敌人
+		for (let i = 0; i < guns.length; i++) {
+			const gun = guns[i];
+			const targetEnemy = enemiesByDistance[i % enemiesByDistance.length];
+
+			if (targetEnemy) {
+				const dx = targetEnemy.x - gun.x;
+				const dy = gun.y - targetEnemy.y;
+				gun.targetAngle = Math.atan2(dx, dy);
 			}
 		}
-
-		game.targetEnemy = closestEnemy;
-
-		// 计算目标角度
-		const dx = game.targetEnemy.x - gun.x;
-		const dy = gun.y - game.targetEnemy.y;
-		game.targetAngle = Math.atan2(dx, dy);
 	}
 
 	// 计算两点之间的距离
@@ -519,30 +683,32 @@
 	}
 
 	// 绘制机枪
-	function drawGun() {
-		game.ctx.save();
-		game.ctx.translate(gun.x, gun.y);
-		game.ctx.rotate(gun.angle);
+	function drawGuns() {
+		for (let gun of guns) {
+			game.ctx.save();
+			game.ctx.translate(gun.x, gun.y);
+			game.ctx.rotate(gun.angle);
 
-		// 枪身
-		game.ctx.fillStyle = gun.color;
-		game.ctx.fillRect(-gun.width / 4, 0, gun.width / 2, gun.height / 2);
+			// 枪身
+			game.ctx.fillStyle = gun.color;
+			game.ctx.fillRect(-gun.width / 4, 0, gun.width / 2, gun.height / 2);
 
-		// 枪管
-		game.ctx.fillStyle = '#1E293B';
-		game.ctx.fillRect(-gun.width / 10, -gun.height / 2, gun.width / 5, gun.height / 2);
+			// 枪管
+			game.ctx.fillStyle = '#1E293B';
+			game.ctx.fillRect(-gun.width / 10, -gun.height / 2, gun.width / 5, gun.height / 2);
 
-		// 枪口
-		game.ctx.fillStyle = '#EF4444';
-		game.ctx.beginPath();
-		game.ctx.arc(0, -gun.height / 2, gun.width / 15, 0, Math.PI * 2);
-		game.ctx.fill();
+			// 枪口
+			game.ctx.fillStyle = '#EF4444';
+			game.ctx.beginPath();
+			game.ctx.arc(0, -gun.height / 2, gun.width / 15, 0, Math.PI * 2);
+			game.ctx.fill();
 
-		game.ctx.restore();
+			game.ctx.restore();
+		}
 	}
 
 	// 射击
-	function shoot() {
+	function shoot(gun) {
 		// 计算子弹起始位置（枪口）
 		const bulletX = gun.x + Math.sin(gun.angle) * (-gun.height / -2);
 		const bulletY = gun.y - Math.cos(gun.angle) * (gun.height / 2);
@@ -570,7 +736,7 @@
 				y: y,
 				radius: Math.random() * 3 + 1,
 				speed: Math.random() * 3 + 1,
-				angle: gun.angle + (Math.random() * 0.5 - 0.25),
+				angle: guns[0].angle + (Math.random() * 0.5 - 0.25),
 				color: `rgba(239, 68, 68, ${Math.random() * 0.8 + 0.2})`,
 				life: Math.random() * 30 + 20
 			});
@@ -624,8 +790,8 @@
 			health: type.health,
 			maxHealth: type.health,
 			color: type.color,
-			targetX: gun.x,
-			targetY: gun.y,
+			targetX: game.flag ? game.flag.x : game.width / 2,
+			targetY: game.flag ? game.flag.y : game.height - 30,
 			angle: 0,
 			hitFlash: 0
 		});
@@ -636,16 +802,16 @@
 		for (let i = game.enemies.length - 1; i >= 0; i--) {
 			const enemy = game.enemies[i];
 
-			// 更新目标位置（机枪位置）
-			enemy.targetX = gun.x;
-			enemy.targetY = gun.y;
+			// 更新目标位置（旗子位置）
+			enemy.targetX = game.flag.x;
+			enemy.targetY = game.flag.y;
 
-			// 计算朝向机枪的角度
+			// 计算朝向旗子的角度
 			const dx = enemy.targetX - enemy.x;
 			const dy = enemy.targetY - enemy.y;
 			enemy.angle = Math.atan2(dx, dy);
 
-			// 向机枪移动
+			// 向旗子移动
 			enemy.x += Math.sin(enemy.angle) * enemy.speed;
 			enemy.y += Math.cos(enemy.angle) * enemy.speed;
 
@@ -851,9 +1017,9 @@
 			game.mouseY = e.touches[0].clientY;
 
 			// 计算机枪角度
-			const dx = game.mouseX - gun.x;
-			const dy = gun.y - game.mouseY;
-			gun.angle = Math.atan2(dx, dy);
+			const dx = game.mouseX - guns[0].x;
+			const dy = guns[0].y - game.mouseY;
+			guns[0].angle = Math.atan2(dx, dy);
 		}
 	}
 
